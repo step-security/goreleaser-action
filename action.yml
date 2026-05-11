@@ -1,0 +1,44 @@
+# https://help.github.com/en/articles/metadata-syntax-for-github-actions
+name: 'GoReleaser Action'
+description: 'GitHub Action for GoReleaser, a release automation tool for Go projects'
+author: 'goreleaser'
+branding:
+  color: 'green'
+  icon: 'package'
+
+inputs:
+  distribution:
+    description: 'GoReleaser Distribution (goreleaser or goreleaser-pro)'
+    default: 'goreleaser'
+    required: false
+  version:
+    description: 'GoReleaser version'
+    default: '~> v2'
+    required: false
+  version-file:
+    description: |
+      Read the GoReleaser version from a file. Path is resolved relative to
+      `workdir`. Currently only `.tool-versions` (asdf/mise) is supported.
+      When set, takes precedence over `version`.
+    required: false
+  args:
+    description: 'Arguments to pass to GoReleaser'
+    required: false
+  workdir:
+    description: 'Working directory (below repository root)'
+    default: '.'
+    required: false
+  install-only:
+    description: 'Just install GoReleaser'
+    default: 'false'
+    required: false
+
+outputs:
+  artifacts:
+    description: 'Build result artifacts'
+  metadata:
+    description: 'Build result metadata'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
