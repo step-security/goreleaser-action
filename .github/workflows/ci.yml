@@ -1,0 +1,157 @@
+name: ci
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') }}
+        version: ${{ github.actor == 'dependabot[bot]' && fromJSON('["latest"]') || fromJSON('["latest", "~> 2.13"]') }}
+        distribution:
+          - goreleaser
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Check
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          args: check --verbose
+          workdir: ./test
+      - name: GoReleaser
+        uses: ./
+        with:
+          distribution: ${{ matrix.distribution }}
+          version: ${{ matrix.version }}
+          args: release --skip=publish --clean --snapshot
+          workdir: ./test
+
+  install-only:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ github.actor == 'dependabot[bot]' && fromJSON('["latest"]') || fromJSON('["latest", "~> 2.13"]') }}
+        distribution:
+          - goreleaser
+        cosign: ${{ github.actor == 'dependabot[bot]' && fromJSON('[true]') || fromJSON('[true, false]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.18
+      - name: Install cosign
+        if: matrix.cosign
+        uses: step-security/cosign-installer@v4
+      - name: GoReleaser
+        uses: ./
+        with:
+          distribution: ${{ matrix.distribution }}
+          version: ${{ matrix.version }}
+          install-only: true
+      - name: Check
+        run: |
+          goreleaser check --verbose
+
+  upload-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.18
+      - name: Check
+        uses: ./
+        with:
+          args: check --verbose
+          workdir: ./test
+      - name: GoReleaser
+        uses: ./
+        with:
+          args: release --skip=publish --clean --snapshot
+          workdir: ./test
+      - name: Upload assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: myapp
+          path: ./test/dist/*
+
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.18
+      - name: GoReleaser
+        uses: ./
+        with:
+          args: release --config .goreleaser-dist.yml --skip=publish --clean --snapshot
+          workdir: ./test
+      - name: Check dist
+        run: |
+          tree -nh ./test/_output
+
+  nightly:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') }}
+        distribution: ${{ github.actor == 'dependabot[bot]' && fromJSON('["goreleaser"]') || fromJSON('["goreleaser-pro", "goreleaser"]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.18
+      - name: GoReleaser
+        uses: ./
+        with:
+          install-only: true
+          distribution: ${{ matrix.distribution }}
+          version: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check
+        run: |
+          goreleaser check -f ./test/.goreleaser.yml
+          goreleaser --version
+          goreleaser --version | grep nightly
