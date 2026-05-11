@@ -1,3 +1,3 @@
-module github.com/goreleaser/goreleaser-action
+module github.com/step-security/goreleaser-action
 
 go 1.18

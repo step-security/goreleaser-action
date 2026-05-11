@@ -4,9 +4,7 @@
   <p align="center"><a href="https://github.com/features/actions">GitHub Action</a> for GoReleaser</p>
   <p align="center">
     <a href="https://github.com/step-security/goreleaser-action/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/release/step-security/goreleaser-action.svg?logo=github&style=flat-square"></a>
-    <a href="https://github.com/marketplace/actions/goreleaser-action"><img alt="GitHub marketplace" src="https://img.shields.io/badge/marketplace-goreleaser--action-blue?logo=github&style=flat-square"></a>
-    <a href="https://github.com/step-security/goreleaser-action/actions?workflow=test"><img alt="Test workflow" src="https://img.shields.io/github/actions/workflow/status/step-security/goreleaser-action/test.yml?label=test&branch=master&logo=github&style=flat-square"></a>
-    <a href="https://codecov.io/gh/step-security/goreleaser-action"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/step-security/goreleaser-action?logo=codecov&style=flat-square"></a>
+    <a href="https://github.com/step-security/goreleaser-action/actions?workflow=test"><img alt="Test workflow" src="https://img.shields.io/github/actions/workflow/status/step-security/goreleaser-action/test.yml?label=test&branch=main&logo=github&style=flat-square"></a>
   </p>
 </p>
 
@@ -28,7 +26,6 @@ ___
   * [outputs](#outputs)
   * [environment variables](#environment-variables)
 * [Limitation](#limitation)
-* [Development](#development)
 * [License](#license)
 
 ## Usage
@@ -288,24 +285,6 @@ secret named `GH_PAT`, the step will look like this:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-```
-
-## Migrating from v3
-
-If you need the auto-snapshot feature, take a look at [this example repository](https://github.com/caarlos0/goreleaser-action-v4-auto-snapshot-example): it's a minimal working example with all you need.
-
-## Development
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full development workflow.
-
-Quick reference:
-
-```
-# install dependencies
-npm ci
-
-# format, build dist/, and run tests
-npm run pre-checkin
 ```
 
 ## License
