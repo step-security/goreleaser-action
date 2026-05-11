@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/goreleaser/goreleaser-action.git"
+    "url": "git+https://github.com/step-security/goreleaser-action.git"
   },
   "keywords": [
     "actions",
     "goreleaser",
     "golang"
   ],
-  "author": "CrazyMax",
+  "author": "step-security",
   "license": "MIT",
 
   "dependencies": {
@@ -29,6 +29,7 @@
     "@actions/exec": "^3.0.0",
     "@actions/http-client": "^4.0.0",
     "@actions/tool-cache": "^4.0.0",
+    "axios": "^1.7.0",
     "js-yaml": "^4.1.1",
     "semver": "^7.7.4",
     "yargs": "^18.0.0"

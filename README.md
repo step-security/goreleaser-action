@@ -1,5 +1,3 @@
-[![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
-
 <p align="center">
   <img alt="GoReleaser Logo" src="https://avatars2.githubusercontent.com/u/24697112?v=3&s=200" height="140" />
   <h3 align="center">GoReleaser Action</h3>
@@ -11,6 +9,8 @@
     <a href="https://codecov.io/gh/step-security/goreleaser-action"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/step-security/goreleaser-action?logo=codecov&style=flat-square"></a>
   </p>
 </p>
+
+[![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
 
 ___
 
@@ -108,7 +108,7 @@ To enable signature verification, install cosign before running the action:
 ```yaml
       -
         name: Install cosign
-        uses: sigstore/cosign-installer@v3
+        uses: step-security/cosign-installer@v4
       -
         name: Run GoReleaser
         uses: step-security/goreleaser-action@v7
@@ -153,13 +153,13 @@ Or with a condition on GoReleaser step:
 ### Signing
 
 If [signing is enabled](https://goreleaser.com/customization/#Signing) in your GoReleaser configuration, you can use
-the [Import GPG](https://github.com/crazy-max/ghaction-import-gpg) GitHub Action along with this one:
+the [Import GPG](https://github.com/step-security/ghaction-import-gpg) GitHub Action along with this one:
 
 ```yaml
       -
         name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v7
+        uses: step-security/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
@@ -199,7 +199,7 @@ purposes. You can do that with the [actions/upload-artifact](https://github.com/
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Upload assets
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: myapp
           path: myfolder/dist/*
