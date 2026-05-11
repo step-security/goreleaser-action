@@ -23,7 +23,8 @@ jobs:
       matrix:
         os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') }}
         version: ${{ github.actor == 'dependabot[bot]' && fromJSON('["latest"]') || fromJSON('["latest", "~> 2.13"]') }}
-        distribution: ${{ github.actor == 'dependabot[bot]' && fromJSON('["goreleaser"]') || fromJSON('["goreleaser", "goreleaser-pro"]') }}
+        distribution:
+          - goreleaser
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -40,10 +41,7 @@ jobs:
           args: check --verbose
           workdir: ./test
       - name: GoReleaser
-        if: ${{ !(github.event_name == 'pull_request' && matrix.distribution == 'goreleaser-pro') }}
         uses: ./
-        env:
-          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
         with:
           distribution: ${{ matrix.distribution }}
           version: ${{ matrix.version }}
@@ -56,7 +54,8 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ github.actor == 'dependabot[bot]' && fromJSON('["latest"]') || fromJSON('["latest", "~> 2.13"]') }}
-        distribution: ${{ github.actor == 'dependabot[bot]' && fromJSON('["goreleaser"]') || fromJSON('["goreleaser", "goreleaser-pro"]') }}
+        distribution:
+          - goreleaser
         cosign: ${{ github.actor == 'dependabot[bot]' && fromJSON('[true]') || fromJSON('[true, false]') }}
     steps:
       - name: Checkout
@@ -71,55 +70,14 @@ jobs:
         if: matrix.cosign
         uses: step-security/cosign-installer@v4
       - name: GoReleaser
-        if: ${{ !(github.event_name == 'pull_request' && matrix.distribution == 'goreleaser-pro') }}
         uses: ./
         with:
           distribution: ${{ matrix.distribution }}
           version: ${{ matrix.version }}
           install-only: true
       - name: Check
-        if: ${{ !(github.event_name == 'pull_request' && matrix.distribution == 'goreleaser-pro') }}
         run: |
           goreleaser check --verbose
-
-  signing:
-    runs-on: ${{ matrix.os }}
-    if: github.event_name != 'pull_request'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: 1.18
-      - name: Import GPG key
-        id: import_gpg
-        uses: step-security/ghaction-import-gpg@v7
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_TEST }}
-          passphrase: ${{ secrets.PASSPHRASE_TEST }}
-      - name: Check
-        uses: ./
-        with:
-          version: latest
-          args: -f .goreleaser-signing.yml check --verbose
-          workdir: ./test
-        env:
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-      - name: GoReleaser
-        uses: ./
-        with:
-          version: latest
-          args: -f .goreleaser-signing.yml release --skip=publish --clean --snapshot
-          workdir: ./test
-        env:
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 
   upload-artifact:
     runs-on: ubuntu-latest
