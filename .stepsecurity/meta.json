@@ -1,0 +1,18 @@
+{
+   "schema_version": "1",
+   "onboarding_type": "copied",
+   "archived": false,
+   "maintained_action_name": "step-security/goreleaser-action",
+   "upstream_full_repo_name": "goreleaser/goreleaser-action",
+   "action_type": "node",
+   "last_release": {
+     "tag_name": "v7.2.2",
+     "created_at": "2026-06-18T05:56:21Z",
+     "published_at": "2026-06-18T15:48:43Z"
+   },
+   "sync": {
+     "ignore_presets": [
+       "defaults_v1"
+     ]
+   }
+ }
