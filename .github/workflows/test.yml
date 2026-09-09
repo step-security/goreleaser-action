@@ -33,7 +33,7 @@ jobs:
           node-version-file: '.node-version'
           cache: npm
       - name: Install cosign
-        uses: step-security/cosign-installer@8c02650536457a1c912424ab6cb9734aa3eceb56 # v4.1.1
+        uses: step-security/cosign-installer@7d5ca7d0ecba292387fa6f81cde2c05e53a2a6d7 # v4.1.2
       - name: Install dependencies
         run: npm ci
       - name: Test
