@@ -1,3 +1,7 @@
 [[IgnoredVulns]]
-id = "GHSA-h67p-54hq-rp68"
-reason = "Dev-only transitive dep via jest; no upstream fix available in @istanbuljs/load-nyc-config."
+id = "GHSA-vfj7-8cjw-p6xm"
+reason = "braces is a dev dependency and is not used at runtime"
+
+[[IgnoredVulns]]
+id = "GHSA-hp3w-g68c-fv3c"
+reason = "sprintf-js is a dev dependency and is not used at runtime"
